@@ -62,12 +62,14 @@ def update_display():
     display_image = resized.copy()
 
     if last_position:
+        # Convertir la posición original a la de la imagen actual
         rel_x = (last_position[0] - x_start) * (w / new_w)
         rel_y = (last_position[1] - y_start) * (h / new_h)
-        # El radio ahora aumenta en función del zoom
-        radius = max(5, int(40 * zoom_factor))
-        cv2.circle(display_image, (int(rel_x), int(rel_y)), radius, (100, 109, 255), -1)
-        logging.debug(f"Dibujando punto en: ({int(rel_x)}, {int(rel_y)}) con radio {radius}")
+        # Escalar el radio de acuerdo al zoom (aumenta con zoom_factor)
+        radius = 70
+        logging.debug("Dibujando círculo en (%s, %s) con radio constante %s", int(rel_x), int(rel_y), radius)
+        cv2.circle(display_image, (int(rel_x), int(rel_y)), radius, (209, 45, 40), -1)
+        cv2.circle(display_image, (int(rel_x), int(rel_y)), radius, (255, 255, 255), 10)
 
 def fetch_coordinates():
     global last_position, top_left, bottom_right, image
@@ -85,8 +87,8 @@ def main():
     pan_x, pan_y = 0, 0
     last_position = None
 
-    top_left = (40.4413680, -3.8236194)
-    bottom_right = (40.4140750, -3.7704831)
+    top_left = (40.4413680, -3.8236194) #42.4695791, -6.0826056
+    bottom_right = (40.4140750, -3.7704831) #42.4415865, -6.0191640
 
     image_path = "C:/Users/danie/PycharmProjects/GPS/Recursos/Mapa.jpg"
     image = cv2.imread(image_path)
