@@ -1,5 +1,5 @@
-# python
 import cv2
+import os
 import numpy as np
 import utm
 import logging
@@ -7,7 +7,7 @@ import time
 from leer_datos import obtener_coordenadas
 from threading import Thread
 
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def latlon_to_pixel(lat, lon, top_left, bottom_right, image_shape):
     lat_top, lon_left = top_left
@@ -25,14 +25,11 @@ def zoom_and_pan(event, x, y, flags, params):
     h, w = image.shape[:2]
     if event == cv2.EVENT_MOUSEWHEEL:
         old_zoom = zoom_factor
-        # Actualizar el factor de zoom
         if flags > 0:
             new_zoom = zoom_factor * 1.1
         else:
             new_zoom = zoom_factor / 1.1
         zoom_factor = min(max(new_zoom, 1.0), 5.0)
-        # Ajustar pan_x y pan_y para hacer zoom relativo al puntero
-        # La conversión usa la relación entre el puntero y la escala inversa
         pan_x = pan_x + (x / old_zoom) - (x / zoom_factor)
         pan_y = pan_y + (y / old_zoom) - (y / zoom_factor)
         logging.debug(f"Nuevo zoom: {zoom_factor}, pan: ({pan_x}, {pan_y})")
@@ -41,7 +38,6 @@ def zoom_and_pan(event, x, y, flags, params):
         params['start_x'], params['start_y'] = x, y
     elif event == cv2.EVENT_MOUSEMOVE and params['dragging']:
         dx, dy = x - params['start_x'], y - params['start_y']
-        # Invertir el arrastre: al mover el mouse a la derecha se desplaza la imagen a la izquierda
         pan_x -= dx / zoom_factor
         pan_y -= dy / zoom_factor
         params['start_x'], params['start_y'] = x, y
@@ -62,12 +58,9 @@ def update_display():
     display_image = resized.copy()
 
     if last_position:
-        # Convertir la posición original a la de la imagen actual
         rel_x = (last_position[0] - x_start) * (w / new_w)
         rel_y = (last_position[1] - y_start) * (h / new_h)
-        # Escalar el radio de acuerdo al zoom (aumenta con zoom_factor)
         radius = 70
-        logging.debug("Dibujando círculo en (%s, %s) con radio constante %s", int(rel_x), int(rel_y), radius)
         cv2.circle(display_image, (int(rel_x), int(rel_y)), radius, (209, 45, 40), -1)
         cv2.circle(display_image, (int(rel_x), int(rel_y)), radius, (255, 255, 255), 10)
 
@@ -87,13 +80,16 @@ def main():
     pan_x, pan_y = 0, 0
     last_position = None
 
-    top_left = (40.4413680, -3.8236194) #42.4695791, -6.0826056
-    bottom_right = (40.4140750, -3.7704831) #42.4415865, -6.0191640
+    top_left = (40.4413680, -3.8236194)  #42.4695791, -6.0826056
+    bottom_right = (40.4140750, -3.7704831)  #42.4415865, -6.0191640
 
-    image_path = "C:/Users/danie/PycharmProjects/GPS/Recursos/Mapa.jpg"
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    project_dir = os.path.dirname(script_dir)
+    image_path = os.path.join(project_dir, "Recursos", "Mapa.jpg")
+
     image = cv2.imread(image_path)
     if image is None:
-        logging.error("Error: No se pudo cargar la imagen.")
+        logging.error(f"Error: No se pudo cargar la imagen en la ruta {image_path}")
         return
     display_image = image.copy()
 

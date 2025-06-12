@@ -1,3 +1,4 @@
+# python
 from time import sleep
 import serial
 import utm
@@ -15,23 +16,32 @@ def leer_datos(puerto_serie="COM3", baudrate=4800, timeout=1):
                 print(f"Trama recibida: {linea.strip()}")
                 if linea.startswith("$GPGGA"):
                     print("Trama GPGGA detectada.")
+                    # Aquí podrías extraer información adicional si es necesario
+                    continue
+                elif linea.startswith("$GPRMC"):
+                    print("Trama GPRMC detectada.")
                     return linea.strip()
     except serial.SerialException as e:
         print(f"Error de puerto serial: {e}")
+    except AttributeError as e:
+        print(f"Error de atributo en el módulo serial: {e}")
     except Exception as e:
         print(f"Ocurrió un error: {e}")
+    return None  # Asegura que la función siempre retorne algo
 
-def parsear_trama_gga(trama):
-    print(f"Parseando trama GGA: {trama}")
+def parsear_trama_gprmc(trama):
+    print(f"Parseando trama GPRMC: {trama}")
     partes = trama.split(',')
-    if partes[0] == "$GPGGA":
-        latitud = partes[2]
-        latitud_dir = partes[3]
-        longitud = partes[4]
-        longitud_dir = partes[5]
-        print(f"Latitud: {latitud} {latitud_dir}, Longitud: {longitud} {longitud_dir}")
-        return latitud, latitud_dir, longitud, longitud_dir
-    print("Trama no válida para GPGGA.")
+    if partes[0] == "$GPRMC" and partes[2] == 'A':  # 'A' indica datos válidos
+        latitud = partes[3]
+        latitud_dir = partes[4]
+        longitud = partes[5]
+        longitud_dir = partes[6]
+        velocidad_nodo = partes[7]
+        velocidad_kmh = float(velocidad_nodo) * 1.852  # Convertir de nudos a km/h
+        print(f"Latitud: {latitud} {latitud_dir}, Longitud: {longitud} {longitud_dir}, Velocidad: {velocidad_kmh} Km/h")
+        return latitud, latitud_dir, longitud, longitud_dir, velocidad_kmh
+    print("Trama no válida para GPRMC.")
     return None
 
 def convertir_a_decimal(grados_minutos, direccion):
@@ -62,13 +72,15 @@ def convertir_a_utm(latitud, latitud_dir, longitud, longitud_dir):
 def obtener_coordenadas():
     puerto = "COM3"  # Puerto donde está conectado el GPS
     print(f"Obteniendo coordenadas desde el puerto {puerto}...")
-    trama_gga = leer_datos(puerto_serie=puerto)
-    if trama_gga:
-        print(f"Trama GGA obtenida: {trama_gga}")
-        latitud, latitud_dir, longitud, longitud_dir = parsear_trama_gga(trama_gga)
-        coordenadas_utm = convertir_a_utm(latitud, latitud_dir, longitud, longitud_dir)
-        print(f"Coordenadas finales en UTM: {coordenadas_utm}")
-        return coordenadas_utm
+    trama_gprmc = leer_datos(puerto_serie=puerto)
+    if trama_gprmc:
+        print(f"Trama GPRMC obtenida: {trama_gprmc}")
+        datos = parsear_trama_gprmc(trama_gprmc)
+        if datos:
+            latitud, latitud_dir, longitud, longitud_dir, velocidad_kmh = datos
+            coordenadas_utm = convertir_a_utm(latitud, latitud_dir, longitud, longitud_dir)
+            print(f"Coordenadas finales en UTM: {coordenadas_utm}, Velocidad: {velocidad_kmh} Km/h")
+            return coordenadas_utm[0], coordenadas_utm[1], velocidad_kmh
     print("No se pudo obtener una trama válida.")
     return None
 
