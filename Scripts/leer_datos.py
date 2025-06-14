@@ -3,7 +3,7 @@ import serial
 import utm
 import time
 
-def leer_datos(puerto_serie="COM3", baudrate=4800, timeout=1):
+def leer_datos(puerto_serie="COM5", baudrate=4800, timeout=1):
     try:
         ser = serial.Serial(puerto_serie, baudrate, timeout=timeout,
                             bytesize=8, parity='N', stopbits=1, rtscts=False)
@@ -50,7 +50,7 @@ def convertir_a_utm(latitud, latitud_dir, longitud, longitud_dir):
     return coordenadas_utm
 
 def obtener_coordenadas():
-    puerto = "COM3"  # Puerto donde está conectado el GPS
+    puerto = "COM5"  # Puerto donde está conectado el GPS
     trama_gga = leer_datos(puerto_serie=puerto)
     if trama_gga:
         latitud, latitud_dir, longitud, longitud_dir = parsear_trama_gga(trama_gga)

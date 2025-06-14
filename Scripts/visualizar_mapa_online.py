@@ -107,8 +107,8 @@ def main():
         dibujar_interfaz(velocidad, color, texto, frame)
         cv2.imshow(window, frame)
 
-        # salir con ESC o cerrar ventana
-        if cv2.waitKey(1) & 0xFF == 27:
+        time.sleep(0.01)
+        if cv2.waitKey(30) & 0xFF == 27:
             break
         if cv2.getWindowProperty(window, cv2.WND_PROP_VISIBLE) < 1:
             break
