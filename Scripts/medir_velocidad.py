@@ -48,46 +48,54 @@ def mostrar_alerta(velocidad, velocidad_max):
     return color, texto
 
 def dibujar_interfaz(velocidad, color, texto_alerta, pantalla):
-    pantalla[:] = (0, 0, 0)
-
-    cv2.rectangle(pantalla, (50, 50), (350, 150), color, -1)
-
+    pantalla[:] = (30, 30, 30)  # fondo oscuro
+    cv2.rectangle(pantalla, (20, 20), (380, 180), (50, 50, 50), -1)  # panel principal
+    cv2.rectangle(pantalla, (20, 20), (380, 180), (200, 200, 200), 2)  # borde
     fuente = cv2.FONT_HERSHEY_SIMPLEX
-    cv2.putText(pantalla, texto_alerta, (60, 120), fuente, 0.8, (255, 255, 255), 2, cv2.LINE_AA)
-
+    cv2.putText(pantalla, "Velocidad actual", (30, 60), fuente, 0.7, (255,255,255), 1, cv2.LINE_AA)
+    cv2.putText(pantalla, f"{velocidad:.2f} Km/h", (50, 120), fuente, 2.0, color, 3, cv2.LINE_AA)
     cv2.imshow("Sistema de Aviso al Conductor", pantalla)
 
 def main():
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    project_dir = os.path.dirname(script_dir)
-    ruta_mapa = os.path.join(project_dir, "Recursos", "mapa_electronico.csv")
-
-    mapa_electronico = cargar_mapa(ruta_mapa)
-    if mapa_electronico is None:
-        logging.error("No se pudo cargar el mapa electrónico. Saliendo del programa.")
+    ruta_mapa = os.path.join(os.path.dirname(os.path.dirname(__file__)), "Recursos", "mapa_electronico.csv")
+    mapa = cargar_mapa(ruta_mapa)
+    if mapa is None:
         return
 
     pantalla = np.zeros((200, 400, 3), dtype=np.uint8)
     cv2.namedWindow("Sistema de Aviso al Conductor", cv2.WINDOW_NORMAL)
 
+    prev_pos = None
+    prev_time = None
+
     while True:
         datos = obtener_coordenadas()
         if datos:
-            utm_norte, utm_este, velocidad = datos
-            velocidad_max = obtener_velocidad_maxima(utm_norte, utm_este, mapa_electronico)
-            if velocidad_max is not None:
-                color_alerta, texto_alerta = mostrar_alerta(velocidad, velocidad_max)
-                dibujar_interfaz(velocidad, color_alerta, texto_alerta, pantalla)
-                logging.info(f"Velocidad actual: {velocidad} Km/h, Velocidad máxima: {velocidad_max} Km/h")
+            utm_e, utm_n, _, _ = datos
+            ahora = time.time()
+            if prev_pos and prev_time:
+                dx = utm_e - prev_pos[0]
+                dy = utm_n - prev_pos[1]
+                dt = ahora - prev_time
+                velocidad = (np.hypot(dx, dy) / dt) * 3.6  # m/s a km/h
             else:
-                logging.warning("No se pudo determinar la velocidad máxima para la ubicación actual.")
-        else:
-            logging.warning("No se obtuvieron coordenadas válidas.")
+                velocidad = 0.0
 
-        key = cv2.waitKey(1000) & 0xFF 
-        if key == 27:  # Esc para salir
+            prev_pos = (utm_e, utm_n)
+            prev_time = ahora
+
+            vel_max = obtener_velocidad_maxima(utm_n, utm_e, mapa)
+            if vel_max is not None:
+                color, texto = mostrar_alerta(velocidad, vel_max)
+                dibujar_interfaz(velocidad, color, texto, pantalla)
+                logging.info(f"Vel: {velocidad:.2f} Km/h, Límite: {vel_max:.2f} Km/h")
+            else:
+                logging.warning("No se pudo determinar velocidad máxima.")
+        else:
+            logging.warning("Coordenadas inválidas.")
+
+        if cv2.waitKey(1000) & 0xFF == 27:
             break
 
     cv2.destroyAllWindows()
