@@ -57,7 +57,7 @@ def crear_mapa(lat, lon):
 
     m.save(MAP_FILE)
 
-def dentro_de_insia(utm_n, utm_e):
+def dentro_de_area(utm_n, utm_e):
     return (AREA_PISTA["norte_min"] <= utm_n <= AREA_PISTA["norte_max"] and
             AREA_PISTA["este_min"] <= utm_e <= AREA_PISTA["este_max"])
 
@@ -92,8 +92,8 @@ def actualizar_posicion():
         prev_pos = (utm_e, utm_n)
         prev_time = ahora
 
-        # Aviso al conductor si estamos dentro de INSIA
-        if dentro_de_insia(utm_n, utm_e) and mapa_csv is not None:
+        # Mostrar velocidad solo dentro del área designada
+        if dentro_de_area(utm_n, utm_e) and mapa_csv is not None:
             vel_max = obtener_velocidad_maxima(utm_n, utm_e, mapa_csv)
             if vel_max is not None:
                 color_alerta, texto_alerta = mostrar_alerta(velocidad_actual, vel_max)
@@ -101,7 +101,7 @@ def actualizar_posicion():
                 texto_alerta = f"{velocidad_actual:.1f} Km/h"
                 color_alerta = (255, 255, 255)
         else:
-            texto_alerta = f"{velocidad_actual:.1f} Km/h"
+            texto_alerta = ""  # No mostrar velocidad fuera del área
             color_alerta = (255, 255, 255)
 
         crear_mapa(lat, lon)

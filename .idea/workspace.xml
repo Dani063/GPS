@@ -4,11 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="35de4d54-7e16-468a-9fdd-41bf398a2065" name="Changes" comment="Practica 3 finalizada">
-      <change beforePath="$PROJECT_DIR$/.idea/PracticaGPS.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/PracticaGPS.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="35de4d54-7e16-468a-9fdd-41bf398a2065" name="Changes" comment="Avance practica 4, solucion con API Google y solucion con  OpenStreetView">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Scripts/leer_datos.py" beforeDir="false" afterPath="$PROJECT_DIR$/Scripts/leer_datos.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Scripts/google_static_map.py" beforeDir="false" afterPath="$PROJECT_DIR$/Scripts/google_static_map.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Scripts/visualizar_mapa_online.py" beforeDir="false" afterPath="$PROJECT_DIR$/Scripts/visualizar_mapa_online.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -43,12 +41,12 @@
     &quot;assignee&quot;: &quot;Dani063&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/Dani063/GPS.git",
-    "accountId": "a86c0cc7-cfd4-4e36-b4e4-4c12d15994da"
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Dani063/GPS.git&quot;,
+    &quot;accountId&quot;: &quot;a86c0cc7-cfd4-4e36-b4e4-4c12d15994da&quot;
   }
-}]]></component>
+}</component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 2
 }</component>
@@ -63,6 +61,7 @@
     "Python.LectorGPS.executor": "Run",
     "Python.LectorPosicionadorGPS.executor": "Run",
     "Python.capturar_gps_a_csv.executor": "Run",
+    "Python.google_static_map.executor": "Run",
     "Python.leer_datos.executor": "Run",
     "Python.leer_todo.executor": "Run",
     "Python.medir_velocidad.executor": "Run",
@@ -116,7 +115,8 @@
       <workItem from="1745058777244" duration="6262000" />
       <workItem from="1749660296028" duration="3377000" />
       <workItem from="1749922281655" duration="1388000" />
-      <workItem from="1749924415822" duration="2963000" />
+      <workItem from="1749924415822" duration="5005000" />
+      <workItem from="1751038882792" duration="1627000" />
     </task>
     <task id="LOCAL-00001" summary="First commit">
       <option name="closed" value="true" />
@@ -142,7 +142,15 @@
       <option name="project" value="LOCAL" />
       <updated>1749916239100</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Avance practica 4, solucion con API Google y solucion con  OpenStreetView">
+      <option name="closed" value="true" />
+      <created>1749927976402</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1749927976402</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -164,6 +172,15 @@
         </entry>
       </map>
     </option>
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="First commit" />
@@ -171,14 +188,15 @@
     <MESSAGE value="Mapa con movimiento, zoom y punto geolocalizacion con actualizacion en tiempo real" />
     <MESSAGE value="Codigo depurado" />
     <MESSAGE value="Practica 3 finalizada" />
-    <option name="LAST_COMMIT_MESSAGE" value="Practica 3 finalizada" />
+    <MESSAGE value="Avance practica 4, solucion con API Google y solucion con  OpenStreetView" />
+    <option name="LAST_COMMIT_MESSAGE" value="Avance practica 4, solucion con API Google y solucion con  OpenStreetView" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/PracticaGPS$visualizar_mapa.coverage" NAME="visualizar_mapa Coverage Results" MODIFIED="1742551469747" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Scripts" />
     <SUITE FILE_PATH="coverage/GPS$visualizar_mapa.coverage" NAME="visualizar_mapa Coverage Results" MODIFIED="1749809098354" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Scripts" />
     <SUITE FILE_PATH="coverage/PracticaGPS$LectorGPS.coverage" NAME="LectorGPS Coverage Results" MODIFIED="1742493271235" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Scripts" />
-    <SUITE FILE_PATH="coverage/GPS$visualizar_mapa_online.coverage" NAME="visualizar_mapa_online Coverage Results" MODIFIED="1749924915458" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Scripts" />
-    <SUITE FILE_PATH="coverage/GPS$visor_online.coverage" NAME="visor_online Coverage Results" MODIFIED="1749927348823" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Scripts" />
+    <SUITE FILE_PATH="coverage/GPS$visor_online.coverage" NAME="visor_online Coverage Results" MODIFIED="1751039800323" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Scripts" />
+    <SUITE FILE_PATH="coverage/GPS$visualizar_mapa_online.coverage" NAME="visualizar_mapa_online Coverage Results" MODIFIED="1751040452280" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Scripts" />
     <SUITE FILE_PATH="coverage/GPS$medir_velocidad.coverage" NAME="medir_velocidad Coverage Results" MODIFIED="1749835295011" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Scripts" />
     <SUITE FILE_PATH="coverage/GPS$leer_datos.coverage" NAME="leer_datos Coverage Results" MODIFIED="1749924745607" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Scripts" />
     <SUITE FILE_PATH="coverage/GPS$leer_todo.coverage" NAME="leer_todo Coverage Results" MODIFIED="1749662032642" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Scripts" />
@@ -186,5 +204,6 @@
     <SUITE FILE_PATH="coverage/PracticaGPS$leer_datos.coverage" NAME="leer_datos Coverage Results" MODIFIED="1742550118620" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Scripts" />
     <SUITE FILE_PATH="coverage/GPS$capturar_gps_a_csv.coverage" NAME="capturar_gps_a_csv Coverage Results" MODIFIED="1749834793503" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Scripts" />
     <SUITE FILE_PATH="coverage/GPS$visor_mapa.coverage" NAME="visor_mapa Coverage Results" MODIFIED="1749925259758" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Scripts" />
+    <SUITE FILE_PATH="coverage/GPS$google_static_map.coverage" NAME="google_static_map Coverage Results" MODIFIED="1751040336066" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Scripts" />
   </component>
 </project>

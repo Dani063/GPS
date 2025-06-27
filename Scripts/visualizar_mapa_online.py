@@ -1,3 +1,4 @@
+# python
 import os
 import time
 import cv2
@@ -6,22 +7,51 @@ import utm
 import logging
 import concurrent.futures
 from leer_datos import obtener_coordenadas
-from medir_velocidad import obtener_velocidad_maxima, mostrar_alerta
 from google_static_map import obtener_mapa_google
 
-logging.basicConfig(level=logging.INFO,
-                    format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+# Define AREA_PISTA
+coord_1 = (40.424217, -3.809688)
+coord_2 = (40.423143, -3.806340)
+utm_1 = utm.from_latlon(*coord_1)
+utm_2 = utm.from_latlon(*coord_2)
+AREA_PISTA = {
+    "norte_max": utm_1[1],
+    "norte_min": utm_2[1],
+    "este_max": utm_1[0],
+    "este_min": utm_2[0]
+}
+
+# Global zoom level and zoom change flag
+zoom_level = 17
+zoom_changed = False
+
+def dentro_de_area(utm_n, utm_e):
+    """Check if the position is within AREA_PISTA."""
+    return (AREA_PISTA["norte_min"] <= utm_n <= AREA_PISTA["norte_max"] and
+            AREA_PISTA["este_min"] <= utm_e <= AREA_PISTA["este_max"])
 
 def dibujar_interfaz(velocidad, color, texto, frame):
+    """Draw the speed meter only if inside AREA_PISTA."""
     cv2.rectangle(frame, (10, 10), (300, 100), (50, 50, 50), -1)
     cv2.rectangle(frame, (10, 10), (300, 100), (200, 200, 200), 2)
     cv2.putText(frame, texto, (20, 60),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2, cv2.LINE_AA)
 
-def distancia(p1, p2):
-    return np.hypot(p1[0] - p2[0], p1[1] - p2[1])
+def mouse_scroll(event, x, y, flags, param):
+    """Handle mouse scroll to adjust zoom level."""
+    global zoom_level, zoom_changed
+    if event == cv2.EVENT_MOUSEWHEEL:
+        if flags > 0:  # Scroll up
+            zoom_level = min(zoom_level + 1, 20)  # Max zoom level is 20
+        else:  # Scroll down
+            zoom_level = max(zoom_level - 1, 0)  # Min zoom level is 0
+        zoom_changed = True  # Mark zoom as changed
+        logging.info(f"Zoom level updated: {zoom_level}")
 
 def main():
+    global zoom_level, zoom_changed
     ruta_csv = os.path.abspath(os.path.join(
         os.path.dirname(__file__), '..', 'Recursos', 'mapa_electronico.csv'))
     logging.info('Iniciando servicio georeferenciado online')
@@ -35,6 +65,7 @@ def main():
     window = 'Mapa Georreferenciado'
     cv2.namedWindow(window, cv2.WINDOW_NORMAL)
     cv2.setWindowProperty(window, cv2.WND_PROP_ASPECT_RATIO, cv2.WINDOW_KEEPRATIO)
+    cv2.setMouseCallback(window, mouse_scroll)
 
     prev_pos = None
     prev_time = None
@@ -52,32 +83,33 @@ def main():
         ahora = time.time()
 
         # Calcular velocidad
+        velocidad = 0.0
         if prev_pos:
             dx = x_utm - prev_pos[0]
             dy = y_utm - prev_pos[1]
             dt = ahora - prev_time
             velocidad = (np.hypot(dx, dy) / dt) * 3.6
-        else:
-            velocidad = 0.0
 
         prev_pos = (x_utm, y_utm)
         prev_time = ahora
 
-        # Verificar si necesitamos actualizar el mapa (cada 50 m)
-        if not last_map_pos or distancia((x_utm, y_utm), last_map_pos) > 50:
+        # Verificar si necesitamos actualizar el mapa (por posición o zoom change)
+        if zoom_changed or not last_map_pos or np.hypot(x_utm - last_map_pos[0], y_utm - last_map_pos[1]) > 50:
             if not map_future or map_future.done():
-                logging.info(f'Actualizando mapa por movimiento significativo...')
+                logging.info(f'Actualizando mapa por cambio de zoom o movimiento significativo...')
                 map_future = executor.submit(
                     obtener_mapa_google,
                     lat, lon,
-                    zoom=17,
+                    zoom=zoom_level,  # Use dynamic zoom level
                     size=size,
                     maptype='satellite',
                     scale=2,
                     fmt='jpg'
                 )
                 last_map_pos = (x_utm, y_utm)
+                zoom_changed = False  # Reset zoom change flag
 
+        # Use the last available map if the new one isn't ready yet
         if map_future and map_future.done():
             try:
                 current_map = map_future.result()
@@ -91,20 +123,15 @@ def main():
         # marcador con estética
         h, w = frame.shape[:2]
         centro = (w // 2, h // 2)
-        radius = 70
+        radius = 10
         cv2.circle(frame, centro, radius, (209, 45, 40), -1)
-        cv2.circle(frame, centro, radius, (255, 255, 255), 10)
+        cv2.circle(frame, centro, radius, (255, 255, 255), 2)
 
-        # Alerta de velocidad
-        mapa_csv = np.genfromtxt(ruta_csv, delimiter=',',
-                                 names=True, dtype=None, encoding=None)
-        vel_max = obtener_velocidad_maxima(y_utm, x_utm, mapa_csv)
-        if vel_max is None:
+        # Mostrar medidor de velocidad solo dentro de AREA_PISTA
+        if dentro_de_area(y_utm, x_utm):
             color, texto = (255, 255, 255), f'{velocidad:.1f} Km/h'
-        else:
-            color, texto = mostrar_alerta(velocidad, vel_max)
+            dibujar_interfaz(velocidad, color, texto, frame)
 
-        dibujar_interfaz(velocidad, color, texto, frame)
         cv2.imshow(window, frame)
 
         time.sleep(0.01)

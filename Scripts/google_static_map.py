@@ -1,9 +1,10 @@
+# python
 import os
 import requests
 import numpy as np
 import cv2
 
-def obtener_mapa_google(lat, lon, zoom=16, size=(600, 400),
+def obtener_mapa_google(lat, lon, zoom, size=(600, 400),
                         maptype='roadmap', scale=2, fmt='jpg', key=None):
     """
     Construye la URL con parámetros de Google Static Maps,
@@ -15,7 +16,7 @@ def obtener_mapa_google(lat, lon, zoom=16, size=(600, 400),
         raise RuntimeError('Falta GOOGLE_API_KEY en variables de entorno')
     params = {
         'center': f'{lat},{lon}',
-        'zoom': zoom,
+        'zoom': zoom,  # Dynamic zoom level
         'size': f'{size[0]}x{size[1]}',
         'scale': scale,
         'format': fmt,
